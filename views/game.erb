@@ -1,0 +1,6 @@
+<h4>hi, <%= session[:player_name] %></h4>
+
+<h4>Your hand are</h3>
+	<% session[:player_cards].each do |card| %>
+		<%= card %>
+	<% end %>
