@@ -48,6 +48,10 @@ end
 post '/set_bet' do
 end
 
+before do
+  @show_hit_and_stand_button = true
+end
+
 get '/game' do
   if !session[:player_name]
     redirect '/'
@@ -66,14 +70,20 @@ end
 
 post '/game/player/hit' do
   session[:player_cards] << session[:deck].pop
-  if add_up_total(session[:player_cards]) > 21
+  total = add_up_total(session[:player_cards])
+  if total > 21
     @error = "#{session[:player_name]} busted! Dealer wins!"
+    @show_hit_and_stand_button = false
+  elsif total == 21
+    @success = "#{session[:player_name]} hits blackjack! #{session[:player_name]} wins!"
+    @show_hit_and_stand_button = false
   end
   erb :game
 end
 
 post '/game/player/stay' do
   @success = "#{session[:player_name]} chose to stay."
+  @show_hit_and_stand_button = false
 
   erb :game
 end

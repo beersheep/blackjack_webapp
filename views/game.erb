@@ -14,11 +14,12 @@
     <%= "#{session[:player_name]} has total of #{add_up_total(session[:player_cards])}" %>
 </div>
 
-
-<form action="/game/player/hit" method="post" class="play-btn">
-  <input type="submit" value="Hit" class="btn btn-info play-btn"/>
-</form>
-<form action="/game/player/stay" method="post" class="play-btn">
-  <input type="submit" value="Stay" class="btn btn-warning"/>
-</form>
+<% if @show_hit_and_stand_button %>
+  <form action="/game/player/hit" method="post" class="play-btn">
+    <input type="submit" value="Hit" class="btn btn-info play-btn"/>
+  </form>
+  <form action="/game/player/stay" method="post" class="play-btn">
+    <input type="submit" value="Stay" class="btn btn-warning"/>
+  </form>
+<% end %>
 
