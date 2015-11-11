@@ -73,6 +73,8 @@ before do
 end
 
 get '/game' do
+  session[:turn] = session[:player_name]
+
   if !session[:player_name]
     redirect '/'
   end
@@ -115,8 +117,8 @@ end
 
 get '/game/dealer' do 
   @show_hit_and_stand_button = false
-  @player = "Dealer"
-
+  session[:turn] = "Dealer"
+  
   dealer_total = add_up_total(session[:dealer_cards])
   if dealer_total == 21
     @error = "Dealer hits blackjack! #{session[:player_name]} lost!"

@@ -3,10 +3,16 @@
 <div class="well">
   <h4>Dealer's hand are:</h4>
     <% session[:dealer_cards].each_with_index do |card, i| %>
-      <%= card_image(card) %>
+      <% if session[:turn] != "Dealer" && i == 0 %>
+        <img src='/images/cards/cover.jpg'>
+      <% else %>
+        <%= card_image(card) %>
+      <% end %>  
     <% end %>
-  </br>
+    </br>
+    <% if session[:turn] == "Dealer" %>
     <h4><%= "Dealer has total of #{add_up_total(session[:dealer_cards])}" %></h4>
+    <% end %>
   <% if @show_dealer_hit_button %>
     <p>
       <form action="/game/dealer/hit" method="post">
