@@ -1,6 +1,24 @@
-<h4>hi, <%= session[:player_name] %></h4>
+<h4><%= "Hello, #{session[:player_name]}! Welcome to Blackjack Game!" %></h4>
 
-<h4>Your hand are</h3>
-	<% session[:player_cards].each do |card| %>
-		<%= card %>
-	<% end %>
+<div class="well">
+  <h4>Dealer's hand are:</h4>
+
+</div>
+
+<div class="well">
+  <h4><%="#{session[:player_name]}'s hand are:" %></h3>
+    <% session[:player_cards].each do |card| %>
+    <%= card %>
+    <% end %>
+  </br>
+    <%= "#{session[:player_name]} has total of #{add_up_total(session[:player_cards])}" %>
+</div>
+
+
+<form action="/game/player/hit" method="post" class="play-btn">
+  <input type="submit" value="Hit" class="btn btn-info play-btn"/>
+</form>
+<form action="/game/player/stay" method="post" class="play-btn">
+  <input type="submit" value="Stay" class="btn btn-warning"/>
+</form>
+
