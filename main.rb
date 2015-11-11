@@ -27,6 +27,22 @@ helpers do
     total
   end
 
+  def card_image(card)
+
+    if ["A","J","Q","K"].include?(card[1])
+      value = case card[1]
+        when "A" then "ace"
+        when "J" then "jack"
+        when "Q" then "Queen"
+        when "K" then "king"
+        end
+    else
+      value = card[1]
+    end
+
+    "<img src='/images/cards/#{card[0]}_#{value}.jpg' class='poker'>"
+  end
+
 
 end
 
@@ -57,7 +73,7 @@ get '/game' do
     redirect '/'
   end
   value = %w(2 3 4 5 6 7 8 9 10 J Q K A)
-  suit = %w(spade heart diamond club)
+  suit = %w(spades hearts diamonds clubs)
   session[:deck] = suit.product(value).shuffle!
   session[:player_cards] = []
   session[:dealer_cards] = []
@@ -82,7 +98,7 @@ post '/game/player/hit' do
 end
 
 post '/game/player/stay' do
-  @success = "#{session[:player_name]} chose to stay."
+  @success = "#{session[:player_name]} chose to stand."
   @show_hit_and_stand_button = false
 
   erb :game
