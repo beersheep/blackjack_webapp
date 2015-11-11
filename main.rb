@@ -47,6 +47,9 @@ helpers do
 end
 
 get '/' do
+  if session[:player]
+    redirect '/game'
+  end
   erb :set_name
 end
 
@@ -82,6 +85,11 @@ get '/game' do
     session[:player_cards] << session[:deck].pop
     session[:dealer_cards] << session[:deck].pop
   end
+
+  player_total = add_up_total(session[:player_cards])
+  if player_total == 21
+    @success = "#{player_name} hits blackjack! #{player_name} wins!"
+  end
   erb :game
 end
 
@@ -99,11 +107,71 @@ post '/game/player/hit' do
 end
 
 post '/game/player/stay' do
-  @success = "#{session[:player_name]} chose to stand."
   @show_hit_and_stand_button = false
+  erb :game
+  redirect '/game/dealer'
+  @success = "#{session[:player_name]} chose to stand."
+end
+
+get '/game/dealer' do 
+  @show_hit_and_stand_button = false
+  @player = "Dealer"
+
+  dealer_total = add_up_total(session[:dealer_cards])
+  if dealer_total == 21
+    @error = "Dealer hits blackjack! #{session[:player_name]} lost!"
+  elsif dealer_total > 17 
+    redirect "/game/compare"
+    @success = "Dealer chooses stand!"
+  else 
+    @show_dealer_hit_button = true
+  end
 
   erb :game
+
 end
+
+post '/game/dealer/hit' do
+  @show_hit_and_stand_button = false
+  session[:dealer_cards] << session[:deck].pop
+
+  dealer_total = add_up_total(session[:dealer_cards])
+  if dealer_total == 21
+    @error = "Dealer hits blackjack! Dealer wins!"
+  elsif dealer_total > 21
+    @success = "Dealer busted! #{player_name} wins!"
+  elsif dealer_total > 17
+    @success = "Dealer stand"
+    redirect 'game/compare'
+  else 
+    @show_dealer_hit_button = true
+  end
+    
+
+  erb :game
+    
+end
+
+get '/game/compare' do 
+  @show_dealer_hit_button = false
+  @show_hit_and_stand_button = false
+
+  player_total = add_up_total(session[:player_cards])
+  dealer_total = add_up_total(session[:dealer_cards])
+
+  if player_total > dealer_total
+    @success = "#{session[:player_name]} has #{player_total}, #{session[:player_name]} wins!"
+    erb :game
+  elsif dealer_total > player_total 
+    @error = "Dealer has #{dealer_total}, Dealer wins!"
+    erb :game
+  else 
+    @success = "It's a push!"
+    erb :game
+  end
+      
+end
+
 
 get '/logout' do
   session.clear
