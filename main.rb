@@ -47,22 +47,23 @@ helpers do
 end
 
 get '/' do
-  if session[:player_name]
-    redirect '/game'
-  end
   erb :set_name
 end
 
 post '/set_name' do
   session[:player_name] = params[:name]
+  if params[:name].empty?
+    @error = "You must enter your name!"
+    halt erb :set_name
+  end
   redirect '/game'
 end
 
-get '/bet' do
-end
+# get '/bet' do
+# end
 
-post '/set_bet' do
-end
+# post '/set_bet' do
+# end
 
 before do
   @show_hit_and_stand_button = true
@@ -87,11 +88,11 @@ end
 post '/game/player/hit' do
   session[:player_cards] << session[:deck].pop
   total = add_up_total(session[:player_cards])
-  if total > 21
-    @error = "#{session[:player_name]} busted! Dealer wins!"
-    @show_hit_and_stand_button = false
-  elsif total == 21
+  if total == 21
     @success = "#{session[:player_name]} hits blackjack! #{session[:player_name]} wins!"
+    @show_hit_and_stand_button = false
+  elsif total > 21
+    @error = "#{session[:player_name]} busted! Dealer wins!"
     @show_hit_and_stand_button = false
   end
   erb :game
