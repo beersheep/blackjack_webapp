@@ -43,6 +43,17 @@ helpers do
     "<img src='/images/cards/#{card[0]}_#{value}.jpg' class='poker'>"
   end
 
+  def game_over(msg)
+    @error = msg
+    @play_again = true
+    erb :game
+  end
+
+  def winner_message(msg)
+    @success = msg
+    @play_again = true
+    erb :game
+  end
 
 end
 
@@ -61,12 +72,6 @@ post '/set_name' do
   end
   redirect '/game'
 end
-
-# get '/bet' do
-# end
-
-# post '/set_bet' do
-# end
 
 before do
   @show_hit_and_stand_button = true
@@ -90,7 +95,8 @@ get '/game' do
 
   player_total = add_up_total(session[:player_cards])
   if player_total == 21
-    @success = "#{player_name} hits blackjack! #{player_name} wins!"
+    winner_message("#{session[:player_name]} hits blackjack! #{session[:player_name]} wins!")
+    @show_hit_and_stand_button = false
   end
   erb :game
 end
@@ -99,10 +105,10 @@ post '/game/player/hit' do
   session[:player_cards] << session[:deck].pop
   total = add_up_total(session[:player_cards])
   if total == 21
-    @success = "#{session[:player_name]} hits blackjack! #{session[:player_name]} wins!"
+    winner_message("#{session[:player_name]} hits blackjack! #{session[:player_name]} wins!")
     @show_hit_and_stand_button = false
   elsif total > 21
-    @error = "#{session[:player_name]} busted! Dealer wins!"
+    game_over("#{session[:player_name]} busted! Dealer wins!")
     @show_hit_and_stand_button = false
   end
   erb :game
@@ -121,8 +127,8 @@ get '/game/dealer' do
   
   dealer_total = add_up_total(session[:dealer_cards])
   if dealer_total == 21
-    @error = "Dealer hits blackjack! #{session[:player_name]} lost!"
-  elsif dealer_total > 17 
+    game_over("Dealer hits blackjack! #{session[:player_name]} lost!")
+  elsif dealer_total >= 17 
     redirect "/game/compare"
     @success = "Dealer chooses stand!"
   else 
@@ -139,9 +145,9 @@ post '/game/dealer/hit' do
 
   dealer_total = add_up_total(session[:dealer_cards])
   if dealer_total == 21
-    @error = "Dealer hits blackjack! Dealer wins!"
+    game_over("Dealer hits blackjack! Dealer wins!")
   elsif dealer_total > 21
-    @success = "Dealer busted! #{player_name} wins!"
+    winner_message("Dealer busted! #{session[:player_name]} wins!") 
   elsif dealer_total > 17
     @success = "Dealer stand"
     redirect 'game/compare'
@@ -162,14 +168,11 @@ get '/game/compare' do
   dealer_total = add_up_total(session[:dealer_cards])
 
   if player_total > dealer_total
-    @success = "#{session[:player_name]} has #{player_total}, #{session[:player_name]} wins!"
-    erb :game
+    winner_message("#{session[:player_name]} has #{player_total}, #{session[:player_name]} wins!")
   elsif dealer_total > player_total 
-    @error = "Dealer has #{dealer_total}, Dealer wins!"
-    erb :game
+    game_over("Dealer has #{dealer_total}, Dealer wins!")
   else 
-    @success = "It's a push!"
-    erb :game
+    winner_message("It's a push!")
   end
       
 end

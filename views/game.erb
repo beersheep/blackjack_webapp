@@ -1,5 +1,14 @@
 <h4><%= "Hello, #{session[:player_name]}! Welcome to Blackjack Game!" %></h4>
 
+<% if @play_again == true %>
+
+<p>Would you like to play again?</p>
+<form action="/game" method="get">
+  <input type="submit" value="Yes" class="btn btn-primary">
+</form>
+
+<% end %>
+
 <div class="well">
   <h4>Dealer's hand are:</h4>
     <% session[:dealer_cards].each_with_index do |card, i| %>
